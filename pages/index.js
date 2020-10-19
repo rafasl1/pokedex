@@ -1,21 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-export default function Home(){
-    const [pokemons, setPokemons] = useState([]);
+export async function getStaticProps(context){
+    const pokemons = await fetch('https://pokeapi.co/api/v2/pokedex/2/')
+    .then((serverResponse) => {
+        if(serverResponse.ok) {
+            return serverResponse.json();
+        }
+    })
+    .then((objectResponse) => {
+        return objectResponse.pokemon_entries;
+    })
 
-    useEffect(() => {
-        fetch('https://pokeapi.co/api/v2/pokedex/2/')
-        .then((serverResponse) => {
-            if(serverResponse.ok) {
-                return serverResponse.json();
-            }
-        })
-        .then((objectResponse) => {
-            console.log(objectResponse.pokemon_entries);
-            setPokemons(objectResponse.pokemon_entries);
-        })
-    }, []);
+    return {
+        props: {
+            pokemons
+        },
 
+    }
+}
+
+export default function Home(props){
+    const { pokemons } = props;
 
     return (
         <div>
